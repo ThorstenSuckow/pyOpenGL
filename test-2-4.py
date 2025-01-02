@@ -6,7 +6,7 @@ from OpenGL.GL import *
 class Test(Base):
 
     def initialize(self):
-        print("Initializing program...")
+        print("Initializing program  (using different buffers for rendering)...")
         OpenGLUtils.printSystemInfo()
 
         # verstex shader
