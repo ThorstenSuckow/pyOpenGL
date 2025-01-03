@@ -5,6 +5,7 @@ class Uniform(object):
     def __init__(self, dataType, data):
 
         # type int, bool, float, vec2, vec3, vec4
+        self.dataType = dataType
 
         self.data = data
 
