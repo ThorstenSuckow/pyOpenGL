@@ -8,7 +8,7 @@ from math import sin, cos
 class Test(Base):
 
     def initialize(self):
-        print("Initializing program (sin/cos-animation)...")
+        print("Initializing program (sin/cos-animation, shifting colors)...")
         OpenGLUtils.printSystemInfo()
 
         # vertex shader
@@ -58,7 +58,7 @@ class Test(Base):
         positionAttribute.associateVariable(self.programRef, "position")
 
         self.translations = Uniform("vec3", [0, 0.0, 0.0])
-        self.baseColors = Uniform("vec3",  [1.0,  0.5, 0.0])
+        self.baseColors = Uniform("vec3",  [0.0,  0.0, 0.0])
 
         self.translations.locateVariable(self.programRef, 'translation')
 
@@ -68,11 +68,17 @@ class Test(Base):
     def update(self):
 
         x, y, z = self.translations.data
-            
         self.translations.data[:] = [
             0.75 * cos(self.time), 
             0.75 * sin(self.time), 
             z
+        ]
+
+        r, g, b = self.baseColors.data
+        self.baseColors.data[:] = [
+            ((sin(self.time))+1) / 2,
+            ((sin(self.time))+0.2) / 2,
+            ((sin(self.time))+.04) / 2,
         ]
  
         glClear(GL_COLOR_BUFFER_BIT)
