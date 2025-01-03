@@ -17,6 +17,7 @@ class Base(object):
         self.running = True
         self.clock = pygame.time.Clock()
 
+        self.time = 0
         self.input = Input()
 
     def initialize(self):
@@ -34,6 +35,8 @@ class Base(object):
             if self.input.quit:
                 self.running = False
 
+            self.deltaTime = self.clock.get_time() / 1000
+            self.time += self.deltaTime
 
             self.update()
 

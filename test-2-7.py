@@ -71,8 +71,8 @@ class Test(Base):
         x += 0.01
 
         if x  >= abs(1 - self.triangleStartPos):#self.triangleWidth:
-            x = 1 - abs(self.triangleStartPos) + self.triangleWidth        
-            x *= -1
+            x = -(1 - abs(self.triangleStartPos) + self.triangleWidth)        
+            
             
         self.translations.data[:] = [x, y, z]
  
