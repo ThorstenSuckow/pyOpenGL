@@ -59,7 +59,7 @@ class Test(Base):
         positionAttribute.associateVariable(self.programRef, "position")
 
         self.translations = Uniform("vec3", [0, 0.0, 0.0])
-        self.baseColors = Uniform("vec3",  [0.0,  1.0, 0.5])
+        self.baseColors = Uniform("vec3",  [0.0,  0.0, 0.0])
 
         self.translations.locateVariable(self.programRef, 'translation')
 
@@ -75,7 +75,13 @@ class Test(Base):
             z
         ]
 
-       
+        r, g, b = self.baseColors.data
+        self.baseColors.data[:] = [
+            ((sin(self.time))+1) / 2,
+            ((sin(self.time))+0.2) / 2,
+            ((sin(self.time))+.04) / 2,
+        ]
+ 
         glClear(GL_COLOR_BUFFER_BIT)
 
         glUseProgram(self.programRef)
