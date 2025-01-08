@@ -41,6 +41,7 @@ class Uniform(object):
                 glUniform2f(self.variableRef, 
                             self.data[0], self.data[1],
                             self.data[2], self.data[3])
-
+            case "mat4":
+                glUniformMatrix4fv(self.variableRef, 1, GL_TRUE, self.data)    
             case _:
                 raise Exception(f"unknown dataType {self.dataType} for uniform variable")                 
