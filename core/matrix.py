@@ -13,7 +13,7 @@ class Matrix(object):
         ]).astype(float)
     
     @staticmethod 
-    def makeTanslation(x, y, z):
+    def makeTranslation(x, y, z):
         return numpy.array([
             [1, 0, 0, x],
             [0, 1, 0, y],
