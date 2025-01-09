@@ -15,10 +15,4 @@ class Test(unittest.TestCase):
         # no acc (=max-speed)
         self.assertEqual(80, Util.getCurrentSpeed(0, 80, current, start))
         
-
         pass
-
-
-
-if __name__ == '__main__':
-    unittest.main()
