@@ -20,8 +20,8 @@ time = 0
 
 
 vertexShader = """
-    in vec3 position;
-    in vec3 col;
+    layout (location = 0) in vec3 position;
+    layout (location = 1) in vec3 col;
 
     out vec3 color;
     void main() {
