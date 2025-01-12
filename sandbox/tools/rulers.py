@@ -5,21 +5,52 @@ from OpenGL.GL import *
 class Rulers:
 
     _surface = None
-
+    _mousePos = None
 
     def __init__(self, width, height):
         self.offsetLeft = 50
         self.offsetBottom = 50
+        self.width = width
+        self.height = height
+        
+    def updateMousePos(self, mousePos):
+        
+        screenX, screenY = mousePos
+        
+        self.x = max(0, screenX - self.offsetLeft)
+        self.y = max(0, abs(screenY - self.height) - self.offsetBottom)
 
-        self._create(width, height, self.offsetLeft, self.offsetBottom)
+        self._mousePos = mousePos
+
+    def drawMousePos(self, mousePos: tuple):
+
+        screenX, screenY = mousePos
+
+        x1y1 = (screenX - 10, screenY)
+        x2y2 = (screenX + 10, screenY)
+        pygame.draw.line(self._surface, (255, 255, 255), x1y1, x2y2)
+        
+        x1y1 = (screenX, screenY - 10)
+        x2y2 = (screenX, screenY + 10)
+        pygame.draw.line(self._surface, (255, 255, 255), x1y1, x2y2)
+        
 
     def surface(self):
         return self._surface
 
-    def _create(self, width, height, offsetLeft, offsetBottom):
-        if not self._surface:
-            surface = pygame.Surface((width, height))
-            self._surface = surface
+    def draw(self):
+
+        width = self.width
+        height = self.height
+        offsetLeft = self.offsetLeft
+        offsetBottom = self.offsetBottom
+
+
+        #if not self._surface:
+        surface = pygame.Surface((width, height))
+        self._surface = surface
+        #else:
+        #    surface = self._surface
 
         if offsetLeft % 10 != 0 or offsetBottom % 10 != 0:
             raise Exception()
@@ -56,6 +87,9 @@ class Rulers:
             tickY2 = (x1, tickY)
             pygame.draw.line(surface, (255, 255, 255),  tickY1, tickY2)
             tickY -= 10
+
+        if self.x > 0 and self. y > 0:
+            self.drawMousePos(self._mousePos)
 
         return self._surface
     
