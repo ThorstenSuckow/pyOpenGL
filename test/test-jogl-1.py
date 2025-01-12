@@ -62,15 +62,13 @@ data = numpy.array(vertices).astype(numpy.float32)
 glBufferData(GL_ARRAY_BUFFER, data.ravel(), GL_STATIC_DRAW)
 
 glEnableVertexAttribArray(0)
-glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat),  ctypes.c_void_p(0))
-
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat),  ctypes.c_void_p(0 * sizeof(GLfloat)))
 
 glEnableVertexAttribArray(1)
 glVertexAttribPointer(1, 3, GL_FLOAT, False, 6*sizeof(GLfloat),  ctypes.c_void_p(3 * sizeof(GLfloat)))
 
 
-#glClearColor(0, 0, 0, 1)
-
+glClearColor(0, 0, 0, 1)
 
 
 while running:
@@ -82,12 +80,21 @@ while running:
         if event.type == pygame.QUIT:
             running = False
    
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  # Screen clear
-
+    # Screen clear, depth buffer clear
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  
+    
     glLineWidth(4)
-    glPointSize(5)    
+    glPointSize(10)    
+
+    # switch state to vaoHandle
+    glBindVertexArray(vaoHandle)
+
+    # activate shader programs
     glUseProgram(programRef)
+
+    # draw points and lines
     glDrawArrays(GL_POINTS, 0, 3)
+    glDrawArrays(GL_LINE_LOOP, 0, 3)
       
     pygame.display.flip()
     
