@@ -23,3 +23,4 @@ triangle.
    a. scale WITH dimension
    b. regain original dimensions, i.e. expand/collapse the viewable 
       rect
+ - select rect and apply matrix transformations using imgui

@@ -42,6 +42,11 @@ pickingFragmentCode = """
     }
 """
 
+objects = {
+    'triangle': 1199424,
+    'point': 2142573
+}
+
 point_vertices = [
     -0.1, -0.1, 0    
 ]
@@ -165,14 +170,14 @@ while running:
         
             # point drawing
             glBindVertexArray(vaoHandles[0])
-            uniformColorId(pickingColorUniformLocation, 1324125)
+            uniformColorId(pickingColorUniformLocation, objects['point'])
             glBindBuffer(GL_ARRAY_BUFFER, vboHandles[0])
             glBufferData(GL_ARRAY_BUFFER, numpy.array(point_vertices).astype(numpy.float32), GL_STATIC_DRAW)
             glDrawArrays(GL_POINTS, 0, 1)
 
             # triangle drawing
             glBindVertexArray(vaoHandles[1])
-            uniformColorId(pickingColorUniformLocation, 1214111)
+            uniformColorId(pickingColorUniformLocation, objects['triangle'])
             glBindBuffer(GL_ARRAY_BUFFER, vboHandles[1])
             glBufferData(GL_ARRAY_BUFFER, numpy.array(triangle_vertices).astype(numpy.float32), GL_STATIC_DRAW)
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 3)
@@ -236,7 +241,14 @@ while running:
             imgui.text(f"click x/y: {wasClicked}")
             imgui.text(f"normalized x/y: ({normal_x}, {normal_y})")
             
-            imgui.text(f"Selected: {getIdForColor((data[0], data[1], data[2]))}")# r{data[0]/255} g{data[1]/255} b{data[2]/255} a{data[3]/255}")
+            id = getIdForColor((data[0], data[1], data[2]))
+
+            sel = '-'
+
+            if id != 0:
+                sel = 'triangle' if id == objects['triangle'] else 'point'
+                
+            imgui.text(f"Selected: {sel} (id: {id})")
 
         imgui.end_child()
         imgui.end()
