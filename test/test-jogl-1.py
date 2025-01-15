@@ -85,16 +85,22 @@ while running:
     
     glLineWidth(4)
     glPointSize(10)    
-
+    
     # switch state to vaoHandle
     glBindVertexArray(vaoHandle)
 
     # activate shader programs
     glUseProgram(programRef)
 
+    # enable culling
+    glEnable(GL_CULL_FACE)
+    # backface culling - backside will not  be rendered
+    glCullFace(GL_FRONT)
+
     # draw points and lines
     glDrawArrays(GL_POINTS, 0, 3)
     glDrawArrays(GL_LINE_LOOP, 0, 3)
+    #glDrawArrays(GL_TRIANGLE_FAN, 0, 3)
       
     pygame.display.flip()
     
