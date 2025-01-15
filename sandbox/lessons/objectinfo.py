@@ -163,6 +163,8 @@ while running:
     if render_imgui:
         mousePos = imgui.get_mouse_pos()    
         
+        # use mouse_down instead to see how this rendering pass
+        # impacts usual render process
         if imgui.is_mouse_clicked(0):
             wasClicked = mousePos
 
@@ -182,9 +184,9 @@ while running:
             glBufferData(GL_ARRAY_BUFFER, numpy.array(triangle_vertices).astype(numpy.float32), GL_STATIC_DRAW)
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 3)
 
-            glUseProgram(0)
-            glBindVertexArray(0)
-            glBindBuffer(GL_ARRAY_BUFFER, 0)
+            #glUseProgram(0)
+            #glBindVertexArray(0)
+            #glBindBuffer(GL_ARRAY_BUFFER, 0)
 
             glFlush()
             glFinish()
@@ -209,7 +211,7 @@ while running:
     glBindVertexArray(vaoHandles[1])
     glBindBuffer(GL_ARRAY_BUFFER, vboHandles[1])
     glBufferData(GL_ARRAY_BUFFER, numpy.array(triangle_vertices).astype(numpy.float32), GL_STATIC_DRAW)
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 3)
+    glDrawArrays(GL_TRIANGLES, 0, 3)
 
     
     glUseProgram(0)
