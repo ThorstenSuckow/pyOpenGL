@@ -1,11 +1,3 @@
-# The pupose of this program is the following:
-# Draw a single point on the screen and a rect
-# using two different buffers.
-# Upon clicking one of the elements, the imgui overlay
-# should provide information about the selected
-# element, i.e. correctly identify it as the point or 
-# rectangular.
-
 import pygame
 import imgui
 import numpy
@@ -127,12 +119,20 @@ y = 80
 render_imgui = True
 wasClicked = False
 
+screen_width = screen.get_size()[0]
+screen_height = screen.get_size()[1]
 
 while running:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.VIDEORESIZE:
+            newSize = event.dict['size']
+            screen_width = newSize[0]
+            screen_height = newSize[1]
+
+
         overlay.process_event(event)
     overlay.process_inputs()
   
@@ -177,9 +177,7 @@ while running:
 
     
     mousePos = imgui.get_mouse_pos()    
-    screen_width = screen.get_size()[0]
-    screen_height = screen.get_size()[1]
-
+    
     normal_x, normal_y = normalize(
         mousePos[0], mousePos[1], 
         screen_width, screen_height
