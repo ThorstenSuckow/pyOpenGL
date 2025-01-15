@@ -18,9 +18,13 @@ should provide information about the selected
 element, i.e. correctly identify it as the point or 
 triangle.
 
+## 3. trianglestripquad.py
+Drau a rectangle using the GL_TRIANGLE_STRIP primitive
+
 ## ToDo:
  - scale object according to screen size, using various options:
    a. scale WITH dimension
    b. regain original dimensions, i.e. expand/collapse the viewable 
       rect
  - select rect and apply matrix transformations using imgui
+ - render objectinfo to offscreen framebuffer so it does not impact usual rendering
