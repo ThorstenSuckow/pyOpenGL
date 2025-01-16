@@ -52,13 +52,13 @@ glVertexAttribPointer(
 )
 
 
-runing = True
+running = True
 
-while True:
+while running:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            runing = False
+            running = False
 
     glClearColor(0, 0 , 0, 1)
     glClear(GL_COLOR_BUFFER_BIT)
