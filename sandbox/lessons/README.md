@@ -21,6 +21,10 @@ triangle.
 ## 3. trianglestripquad.py
 Draw a rectangle using the GL_TRIANGLE_STRIP primitive
 
+## 4. duoubletriangleindices.py
+Draw two rectangles using an Index Buffer Object.
+
+
 ## ToDo:
  - scale object according to screen size, using various options:
    a. scale WITH dimension
