@@ -19,7 +19,7 @@ element, i.e. correctly identify it as the point or
 triangle.
 
 ## 3. trianglestripquad.py
-Drau a rectangle using the GL_TRIANGLE_STRIP primitive
+Draw a rectangle using the GL_TRIANGLE_STRIP primitive
 
 ## ToDo:
  - scale object according to screen size, using various options:
