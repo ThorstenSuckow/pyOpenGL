@@ -24,6 +24,9 @@ Draw a rectangle using the GL_TRIANGLE_STRIP primitive
 ## 4. duoubletriangleindices.py
 Draw two rectangles using an Index Buffer Object.
 
+## 5. primitiverestart.py
+Force restarting primitive rendering to break GL_TRIANGLE_STRIP order.
+
 
 ## ToDo:
  - scale object according to screen size, using various options:
