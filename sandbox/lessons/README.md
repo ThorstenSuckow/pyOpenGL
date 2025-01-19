@@ -31,6 +31,9 @@ Force restarting primitive rendering to break GL_TRIANGLE_STRIP order.
 Use instanced rendering to draw multiple points across
 the screen.
 
+# 7. directionvectors.py
+Draw a rectangle where direction vectors a added with the origin being the center of the rectangle
+
 ## ToDo:
  - scale object according to screen size, using various options:
    a. scale WITH dimension
