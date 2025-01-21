@@ -53,7 +53,7 @@ class Attribute(object):
     def associateVariable(self, programRef, variableName):
         # glGetAttribLocation returns a value used to reference an attribute variable 
         # (type "in") with the name indicated by variableName
-        # and decalred in the vertex shader of the program referenced by
+        # and declared in the vertex shader of the program referenced by
         # programRef - returns -1 if no such attribute is found/used
         variableRef = glGetAttribLocation(programRef, variableName)
 

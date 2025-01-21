@@ -47,7 +47,7 @@ class Test(Base):
         self.triangleStartPos = positionData[0][0] 
         self.triangleWidth = abs(abs(positionData[0][0]) + positionData[1][0]) 
 
-        # set up vertext array object 
+        # set up vertex array object 
         vaoRef = glGenVertexArrays(1)
         glBindVertexArray(vaoRef)
 
