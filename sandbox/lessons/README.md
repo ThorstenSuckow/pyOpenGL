@@ -35,6 +35,8 @@ the screen.
 Draw a rectangle where direction vectors a added with the origin being the center of the rectangle
 
 ## ToDo:
+ - for task 7: if rotating ispossible in a subsequent implementation, show Axis Aligned
+   Bounding Box of the rotatet element in a separate overlay
  - scale object according to screen size, using various options:
    a. scale WITH dimension
    b. regain original dimensions, i.e. expand/collapse the viewable 
