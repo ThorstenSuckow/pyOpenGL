@@ -3,11 +3,22 @@
 class Util:
 
     @staticmethod
-    def getCurrentSpeed(acceleration, startVelocity, currentTime, timeStart):
-        
-        delta = currentTime - timeStart 
-        delta = delta / 1_000_000_000 
+    def intToRgb(id):
+        return(
+            (id & 0x000000FF) >>  0,
+            (id & 0x0000FF00) >>  8,
+            (id & 0x00FF0000) >> 16
+        )
 
-        return  startVelocity + acceleration * (delta)
+    @staticmethod
+    def rgbToInt(rgb):
+        r, g, b = rgb 
+        return(r + g * 256 + b * 256**2)
+    
+    @staticmethod
+    def toClipCoordinates(x, y, width, height):
         
-        pass
+        x1 = (2 * x) / width - 1 
+        y1 = 1 - (2 * y) / height 
+
+        return x1, y1
