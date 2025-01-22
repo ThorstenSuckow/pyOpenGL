@@ -34,6 +34,9 @@ the screen.
 # 7. directionvectors.py
 Draw a rectangle where direction vectors a added with the origin being the center of the rectangle
 
+# 8. directionvectors_sel.py
+Use task 7 as base, hide vecors initially, upon selecting the rectangle open dev-mode (imgui), show model of selected object in overlay and render vectors
+
 ## ToDo:
  - for task 7: if rotating ispossible in a subsequent implementation, show Axis Aligned
    Bounding Box of the rotatet element in a separate overlay
