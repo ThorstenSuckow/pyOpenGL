@@ -52,6 +52,17 @@ fragmentShader = """
     } 
 """
 
+
+pickingFragmentCode = """
+    out vec4 FragColor;
+    
+    uniform vec4 PickingColor;
+
+    void main() {
+        FragColor = PickingColor;
+    }
+"""
+
 pygame.init()
 size = 800, 600
 pygame.display.set_mode(size, pygame.DOUBLEBUF | pygame.OPENGL | pygame.RESIZABLE)
@@ -62,9 +73,6 @@ overlay = PygameRenderer()
 io = imgui.get_io()
 io.display_size = size
 
-pickingProgramRef = OpenGLUtils.initializeProgram(vertexShader, pickingFragmentCode)
-programRef = OpenGLUtils.initializeProgram(vertexShader, fragmentShader)
-axisProgramRef = OpenGLUtils.initializeProgram(axisVertexShader, axisFragmentShader)
 
 vertices = [
     #  x      y   z
@@ -85,6 +93,10 @@ axis = [
     0, 1, 0
 ]
 
+'''
+Rectangle
+'''
+programRef = OpenGLUtils.initializeProgram(vertexShader, fragmentShader)
 vaoHandle = glGenVertexArrays(1)
 vboHandle = glGenBuffers(1)
 glBindVertexArray(vaoHandle)
@@ -101,6 +113,27 @@ glVertexAttribPointer(
     ctypes.c_void_p(0)
 )
 
+'''
+Picking rectangle
+'''
+pickingProgramRef = OpenGLUtils.initializeProgram(vertexShader, pickingFragmentCode)
+pickingVaoHandle = glGenVertexArrays(1) 
+pickingVboHandle = glGenBuffers(1)
+pickingColorUniformLocation = glGetUniformLocation(program=pickingProgramRef, name="PickingColor"),  
+pickingColorUniformLocation = pickingColorUniformLocation[0] 
+glBindVertexArray(pickingVaoHandle)
+glBindBuffer(GL_ARRAY_BUFFER, pickingVboHandle)
+glEnableVertexAttribArray(0)
+glVertexAttribPointer(
+    0, 3, GL_FLOAT, GL_FALSE, 
+    3 * sizeof(GLfloat), 
+    ctypes.c_void_p(0)
+)
+
+'''
+Vectors / Axis
+'''
+axisProgramRef = OpenGLUtils.initializeProgram(axisVertexShader, axisFragmentShader)
 vaoHandleAxis = glGenVertexArrays(1)
 vboAxisHandle = glGenBuffers(1)
 glBindVertexArray(vaoHandleAxis)
@@ -124,6 +157,8 @@ glVertexAttribPointer(
 )
 
 
+
+
 glEnable(GL_BLEND)
 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
@@ -131,7 +166,8 @@ glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 running = True
 devMode = False
 screen_width, screen_height = size
-
+wasClicked = False
+selectedObject = None
 while running:
 
     for event in pygame.event.get():
@@ -144,22 +180,43 @@ while running:
                 screen_width = newSize[0]
                 screen_height = newSize[1]
         overlay.process_event(event)
-
-    
-
     overlay.process_inputs()
   
     glClearColor(0, 0 , 0, 0)
     glClear(GL_COLOR_BUFFER_BIT)
+
+    if devMode: 
+        mousePos = imgui.get_mouse_pos()    
+
+        if  ((imgui.is_any_item_hovered() == False and imgui.is_window_hovered(imgui.HOVERED_ANY_WINDOW) == False)
+            and imgui.is_mouse_clicked(0)):
+            wasClicked = mousePos
+
+            '''
+                draw color id
+            '''
+            glBindVertexArray(pickingVaoHandle)
+            glUseProgram(pickingProgramRef)
+            glBindBuffer(GL_ARRAY_BUFFER, pickingVboHandle)
+            glBufferData(GL_ARRAY_BUFFER, numpy.array(vertices).astype(numpy.float32), GL_STATIC_DRAW)
+
+            pickingColor = Util.intToRgb(2145525151)
+            glUniform4f(pickingColorUniformLocation, pickingColor[0]/255, 
+                        pickingColor[1]/255, pickingColor[2]/255, 1.0)
+
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, len(vertices) // 3)
+            glFlush()
+            glFinish()
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+            data = glReadPixels(
+                wasClicked[0],  screen_height - wasClicked[1], 1,1, GL_RGBA, GL_UNSIGNED_BYTE)
 
     glBindVertexArray(vaoHandle)
     glUseProgram(programRef)
     glDrawArrays(GL_TRIANGLE_STRIP, 0, len(vertices) // 3)
     
 
-    if devMode: 
-        mousePos = imgui.get_mouse_pos()    
-
+    if devMode:
         glBindVertexArray(vaoHandleAxis)
         glUseProgram(axisProgramRef)
         glDrawArrays(GL_LINES, 0, len(axis) // 3)
@@ -181,6 +238,31 @@ while running:
         imgui.text(f"Mouse pos (normalized): {normal_x}, {normal_y}")    
         imgui.text(f"screen: {screen_width} x {screen_height}")
         
+        if wasClicked:
+   
+            normal_x, normal_y = Util.toClipCoordinates(
+                wasClicked[0], wasClicked[1], 
+                screen_width, screen_height
+            )
+
+            imgui.text(f"click x/y: {wasClicked}")
+            imgui.text(f"normalized x/y: ({normal_x}, {normal_y})")
+            
+            id = Util.rgbToInt((data[0], data[1], data[2]))
+
+            if id != 0:
+                selectedObject = "rectangle"
+                imgui.text(f"Selected: {selectedObject} (id: {id})")
+
+                imgui.core.slider_float2(
+                    "move", 
+                    0, 
+                    0, 
+                    -1, 
+                    1, 
+                    format='%.3f', 
+                )
+
         imgui.end_child()
         imgui.end()
         
