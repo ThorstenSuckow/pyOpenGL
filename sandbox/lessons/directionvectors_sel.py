@@ -2,26 +2,17 @@ import numpy
 import pygame
 from OpenGL.GL import *
 from core.openGLUtils import OpenGLUtils
+from core.matrix import Matrix
 import imgui
 from imgui.integrations.pygame import PygameRenderer
 from core.util import Util
 
 vertexShader = """
     in vec3 position;
+    uniform mat4 modelMatrix;
 
     void main() {
-        gl_Position = vec4(position, 1);
-    }
-"""
-
-
-pickingFragmentCode = """
-    out vec4 FragColor;
-    
-    uniform vec4 PickingColor;
-
-    void main() {
-        FragColor = PickingColor;
+        gl_Position = modelMatrix * vec4(position, 1);
     }
 """
 
@@ -93,6 +84,8 @@ axis = [
     0, 1, 0
 ]
 
+modelMatrix = Matrix.makeIdentity()
+
 '''
 Rectangle
 '''
@@ -100,6 +93,9 @@ programRef = OpenGLUtils.initializeProgram(vertexShader, fragmentShader)
 vaoHandle = glGenVertexArrays(1)
 vboHandle = glGenBuffers(1)
 glBindVertexArray(vaoHandle)
+glUseProgram(programRef)
+modelMatrixUniformLocation = glGetUniformLocation(programRef, "modelMatrix")  
+    
 glBindBuffer(GL_ARRAY_BUFFER, vboHandle)
 glBufferData(
     GL_ARRAY_BUFFER,
@@ -119,9 +115,9 @@ Picking rectangle
 pickingProgramRef = OpenGLUtils.initializeProgram(vertexShader, pickingFragmentCode)
 pickingVaoHandle = glGenVertexArrays(1) 
 pickingVboHandle = glGenBuffers(1)
-pickingColorUniformLocation = glGetUniformLocation(program=pickingProgramRef, name="PickingColor"),  
-pickingColorUniformLocation = pickingColorUniformLocation[0] 
+glUseProgram(pickingProgramRef)
 glBindVertexArray(pickingVaoHandle)
+pickingColorUniformLocation = glGetUniformLocation(pickingProgramRef, "PickingColor")
 glBindBuffer(GL_ARRAY_BUFFER, pickingVboHandle)
 glEnableVertexAttribArray(0)
 glVertexAttribPointer(
@@ -168,6 +164,10 @@ devMode = False
 screen_width, screen_height = size
 wasClicked = False
 selectedObject = None
+
+print(f"ModelMatrixLocation: {modelMatrixUniformLocation}")
+print(f"PickingColorLocation: {pickingColorUniformLocation}")
+
 while running:
 
     for event in pygame.event.get():
@@ -187,7 +187,6 @@ while running:
 
     if devMode: 
         mousePos = imgui.get_mouse_pos()    
-
         if  ((imgui.is_any_item_hovered() == False and imgui.is_window_hovered(imgui.HOVERED_ANY_WINDOW) == False)
             and imgui.is_mouse_clicked(0)):
             wasClicked = mousePos
@@ -195,15 +194,16 @@ while running:
             '''
                 draw color id
             '''
-            glBindVertexArray(pickingVaoHandle)
             glUseProgram(pickingProgramRef)
+            glBindVertexArray(pickingVaoHandle)
+            pickingColor = Util.intToRgb(2145525151)
+            glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_TRUE, modelMatrix)
+            glUniform4f(pickingColorUniformLocation, pickingColor[0]/255, 
+                        pickingColor[1]/255, pickingColor[2]/255, 1.0)
             glBindBuffer(GL_ARRAY_BUFFER, pickingVboHandle)
             glBufferData(GL_ARRAY_BUFFER, numpy.array(vertices).astype(numpy.float32), GL_STATIC_DRAW)
 
-            pickingColor = Util.intToRgb(2145525151)
-            glUniform4f(pickingColorUniformLocation, pickingColor[0]/255, 
-                        pickingColor[1]/255, pickingColor[2]/255, 1.0)
-
+            
             glDrawArrays(GL_TRIANGLE_STRIP, 0, len(vertices) // 3)
             glFlush()
             glFinish()
@@ -211,8 +211,9 @@ while running:
             data = glReadPixels(
                 wasClicked[0],  screen_height - wasClicked[1], 1,1, GL_RGBA, GL_UNSIGNED_BYTE)
 
-    glBindVertexArray(vaoHandle)
     glUseProgram(programRef)
+    glBindVertexArray(vaoHandle)
+    glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_TRUE, modelMatrix)
     glDrawArrays(GL_TRIANGLE_STRIP, 0, len(vertices) // 3)
     
 
@@ -249,20 +250,23 @@ while running:
             imgui.text(f"normalized x/y: ({normal_x}, {normal_y})")
             
             id = Util.rgbToInt((data[0], data[1], data[2]))
+            
+            imgui.text(f"Selected id: {id}")
+
 
             if id != 0:
                 selectedObject = "rectangle"
-                imgui.text(f"Selected: {selectedObject} (id: {id})")
-
-                imgui.core.slider_float2(
+                imgui.text(f"Selected object: {selectedObject}")
+    
+                _, values = imgui.core.slider_float2(
                     "move", 
-                    0, 
-                    0, 
+                    0.0, 
+                    0.0, 
                     -1, 
                     1, 
                     format='%.3f', 
                 )
-
+                modelMatrix = Matrix.makeTranslation(values[0] / 1000, values[1] / 1000, 0) @ modelMatrix 
         imgui.end_child()
         imgui.end()
         
