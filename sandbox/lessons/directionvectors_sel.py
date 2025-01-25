@@ -164,9 +164,8 @@ devMode = False
 screen_width, screen_height = size
 wasClicked = False
 selectedObject = None
-
-print(f"ModelMatrixLocation: {modelMatrixUniformLocation}")
-print(f"PickingColorLocation: {pickingColorUniformLocation}")
+posx = 0
+posy = 0
 
 while running:
 
@@ -258,15 +257,18 @@ while running:
                 selectedObject = "rectangle"
                 imgui.text(f"Selected object: {selectedObject}")
     
-                _, values = imgui.core.slider_float2(
+
+                changed, values = imgui.core.slider_float2(
                     "move", 
-                    0.0, 
-                    0.0, 
+                    posx, 
+                    posy, 
                     -1, 
                     1, 
                     format='%.3f', 
                 )
-                modelMatrix = Matrix.makeTranslation(values[0] / 1000, values[1] / 1000, 0) @ modelMatrix 
+                if changed:
+                    posx, posy = values
+                    modelMatrix = Matrix.makeTranslation(posx, posy, 0)
         imgui.end_child()
         imgui.end()
         
