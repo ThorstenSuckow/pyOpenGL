@@ -19,10 +19,11 @@ vertexShader = """
 axisVertexShader = """
     layout (location = 0) in vec3 position;
     layout (location = 1) in vec3 axisColor;
+    uniform mat4 modelMatrix;
     out vec3 axis_color;
     void main() {
         axis_color = axisColor;
-        gl_Position = vec4(position, 1);
+        gl_Position = modelMatrix * vec4(position, 1);
     }
 """
 
@@ -133,6 +134,7 @@ axisProgramRef = OpenGLUtils.initializeProgram(axisVertexShader, axisFragmentSha
 vaoHandleAxis = glGenVertexArrays(1)
 vboAxisHandle = glGenBuffers(1)
 glBindVertexArray(vaoHandleAxis)
+pickingModelMatrixLocation = glGetUniformLocation(axisProgramRef, "modelMatrix")
 glBindBuffer(GL_ARRAY_BUFFER, vboAxisHandle)
 glBufferData(
     GL_ARRAY_BUFFER,
@@ -219,6 +221,7 @@ while running:
     if devMode:
         glBindVertexArray(vaoHandleAxis)
         glUseProgram(axisProgramRef)
+        glUniformMatrix4fv(pickingModelMatrixLocation, 1, GL_TRUE, modelMatrix)
         glDrawArrays(GL_LINES, 0, len(axis) // 3)
 
         glUseProgram(0)
