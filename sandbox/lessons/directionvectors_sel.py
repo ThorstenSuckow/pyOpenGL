@@ -68,24 +68,28 @@ io.display_size = size
 
 vertices = [
     #  x      y   z
-    -0.25,    0,  0,
-    -0.25,  0.5,  0,
-     0.25,    0,  0,
-     0.25,  0.5,  0
+    [-0.75,    0,  0],
+    [-0.75,  0.5,  0],
+     [0,    0,  0],
+     [0,  0.5,  0]
 ]
 
+center = Util.center(vertices)
+
+
 axis = [
-    0, 0.25, 0,
+    center[0], center[1], 0,
     1, 0, 0, 
-    0.5, 0.25, 0, 
+    center[0] + 0.5, center[1], 0, 
     1, 0, 0,
-    0, 0.25, 0,
+    center[0], center[1], 0,
     0, 1, 0,
-    0, 0.75, 0,
+    center[0], center[1] + 0.5, 0,
     0, 1, 0
 ]
 
 modelMatrix = Matrix.makeIdentity()
+ 
 
 '''
 Rectangle
@@ -100,7 +104,7 @@ modelMatrixUniformLocation = glGetUniformLocation(programRef, "modelMatrix")
 glBindBuffer(GL_ARRAY_BUFFER, vboHandle)
 glBufferData(
     GL_ARRAY_BUFFER,
-    numpy.array(vertices).astype(numpy.float32),
+    numpy.array(vertices).ravel().astype(numpy.float32),
     GL_STATIC_DRAW     
 )
 glEnableVertexAttribArray(0)
@@ -166,8 +170,8 @@ devMode = False
 screen_width, screen_height = size
 wasClicked = False
 selectedObject = None
-posx = 0
-posy = 0
+posx = center[0]
+posy = center[1]
 
 while running:
 
@@ -202,10 +206,10 @@ while running:
             glUniform4f(pickingColorUniformLocation, pickingColor[0]/255, 
                         pickingColor[1]/255, pickingColor[2]/255, 1.0)
             glBindBuffer(GL_ARRAY_BUFFER, pickingVboHandle)
-            glBufferData(GL_ARRAY_BUFFER, numpy.array(vertices).astype(numpy.float32), GL_STATIC_DRAW)
+            glBufferData(GL_ARRAY_BUFFER, numpy.array(vertices).ravel().astype(numpy.float32), GL_STATIC_DRAW)
 
             
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, len(vertices) // 3)
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, len(vertices))
             glFlush()
             glFinish()
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
@@ -215,7 +219,7 @@ while running:
     glUseProgram(programRef)
     glBindVertexArray(vaoHandle)
     glUniformMatrix4fv(modelMatrixUniformLocation, 1, GL_TRUE, modelMatrix)
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, len(vertices) // 3)
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, len(vertices))
     
 
     if devMode:
@@ -271,7 +275,7 @@ while running:
                 )
                 if changed:
                     posx, posy = values
-                    modelMatrix = Matrix.makeTranslation(posx, posy, 0)
+                    modelMatrix = Matrix.makeTranslation(posx - center[0], posy - center[1], 0)
         imgui.end_child()
         imgui.end()
         

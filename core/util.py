@@ -22,3 +22,17 @@ class Util:
         y1 = 1 - (2 * y) / height 
 
         return x1, y1
+    
+    @staticmethod
+    def center(list):
+        minx = 1
+        miny = 1
+        maxy = -1
+        maxx = -1
+        for i in range(0, len(list)):
+            minx = min(minx, list[i][0])
+            maxx = max(maxx, list[i][0])
+            miny = min(miny, list[i][1])
+            maxy = max(maxy, list[i][1])
+            
+        return minx + (maxx - minx) / 2, miny + (maxy - miny) / 2    
